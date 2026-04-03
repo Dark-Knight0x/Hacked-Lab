@@ -146,7 +146,8 @@ This is not a real partition — it is the **LVM2 metadata area**, which stores 
 
 The system timezone is stored as plain text in `/etc/timezone`. After mounting the disk image in FTK Imager, we navigated directly to this file.
 
-![image](https://hackmd.io/_uploads/HJ6XC0mq-g.png)
+<img width="2559" height="929" alt="image" src="https://github.com/user-attachments/assets/bc812d90-1b74-475a-af5e-dbb8c453e1f3" />
+
 
 
 
@@ -160,7 +161,8 @@ The value was consistent with all log timestamps observed throughout the investi
 
 To identify the last user who logged into the system, we opened the disk image in FTK Imager and directly examined the file `/var/log/auth.log`. By reviewing the log entries from the bottom, we found the most recent successful authentication:
 
-![image](https://hackmd.io/_uploads/ry55kJE5Ze.png)
+<img width="2543" height="1267" alt="image" src="https://github.com/user-attachments/assets/e9816b39-5027-4161-a57a-ec59024f1e92" />
+
 
 
 ```csharp
@@ -179,7 +181,8 @@ image
 
 In `/var/log/auth.log`, filtering for the `Accepted password for mail` event reveals the full connection details including the ephemeral source port.
 
-![image](https://hackmd.io/_uploads/HkdAkkEc-g.png)
+<img width="2071" height="502" alt="image" src="https://github.com/user-attachments/assets/63e910de-49e7-4d38-83b6-12f5aaee184a" />
+
 
 
 
@@ -191,7 +194,8 @@ In `/var/log/auth.log`, filtering for the `Accepted password for mail` event rev
 
 The session start and end timestamps from `auth.log` show:
 
-![image](https://hackmd.io/_uploads/Sk_fgy49We.png)
+<img width="1360" height="233" alt="image" src="https://github.com/user-attachments/assets/c5f46a01-2a53-4fb5-b10b-415b5ff922ee" />
+
 
 
 ```
@@ -211,7 +215,8 @@ This is a very short session, indicating a targeted and scripted intrusion.
 
 The `auth.log` entry explicitly references the SSH daemon (`sshd`) as the service processing the login:
 
-![image](https://hackmd.io/_uploads/BJSUgJV5-x.png)
+<img width="1478" height="74" alt="image" src="https://github.com/user-attachments/assets/d0af14d7-716e-4b41-b9ef-540448c8c002" />
+
 
 
 ```
@@ -226,7 +231,7 @@ sshd[...]: Accepted password for mail from ... port 57708 ssh2
 
 Examining `/var/log/auth.log` reveals thousands of sequential `Failed password for root` entries from multiple source IPs before the eventual successful login. This pattern — rapid, automated, repeated failed attempts — is the hallmark of a **brute-force** attack.
 
-![image](https://hackmd.io/_uploads/r1l3xk4c-l.png)
+<img width="2060" height="1019" alt="image" src="https://github.com/user-attachments/assets/6abd3b82-ba54-4d4e-b116-081fb02f15b6" />
 
 ---
 
@@ -236,7 +241,8 @@ Examining `/var/log/auth.log` reveals thousands of sequential `Failed password f
 
 The `lastlog` binary file records the most recent login per user. Reading it with the `lastlog` command and filtering for entries with actual login records (non-"Never logged in") reveals exactly **2** unique remote IP addresses.
 
-![image](https://hackmd.io/_uploads/SkY1-yNcZe.png)
+<img width="1028" height="703" alt="image" src="https://github.com/user-attachments/assets/b83bfd76-71d1-4b04-b355-53ff6343b369" />
+
 
 
 ---
@@ -247,7 +253,8 @@ The `lastlog` binary file records the most recent login per user. Reading it wit
 
 Parsing `/etc/passwd` and filtering for entries with real interactive shells (`/bin/bash`, `/bin/sh`) — excluding system accounts with `/sbin/nologin` or `/usr/sbin/nologin` — yields **5** users.
 
-![image](https://hackmd.io/_uploads/HJZBzkV9Wg.png)
+<img width="2047" height="1420" alt="image" src="https://github.com/user-attachments/assets/cb4b3281-71c2-44e8-b807-ce90b420a6ad" />
+
 
 ---
 
@@ -266,7 +273,8 @@ john --show shadow
 # php:forensics:...   ← attacker reused the same password
 ```
 
-![image](https://hackmd.io/_uploads/HyapG1NcWl.png)
+<img width="908" height="735" alt="image" src="https://github.com/user-attachments/assets/54834c07-0214-4673-b201-6b7059955da4" />
+
 
 
 > 💡 Both `mail` and the attacker-created `php` account used the same password — suggesting the attacker copy-pasted credentials when creating their backdoor.
@@ -279,7 +287,8 @@ john --show shadow
 
 Grepping `auth.log` for `useradd` reveals the attacker (as root) creating the `php` account and immediately adding it to the `sudo` group for persistent privileged access.
 
-![image](https://hackmd.io/_uploads/SkmDmJNcZx.png)
+<img width="2031" height="50" alt="image" src="https://github.com/user-attachments/assets/13d7e3f6-21db-4734-a182-809af741f763" />
+
 
 
 No legitimate system service requires a user named `php`.
@@ -292,7 +301,7 @@ No legitimate system service requires a user named `php`.
 
 Each line in `/etc/group` represents one group. A simple line count gives the total:
 
-![image](https://hackmd.io/_uploads/SyC1E14cZx.png)
+<img width="1118" height="719" alt="image" src="https://github.com/user-attachments/assets/a2fd7200-391e-40e3-be77-b0da49e84af1" />
 
 
 ```bash
@@ -307,7 +316,7 @@ wc -l /etc/group
 **Answer: `2`**
 
 The `sudo` entry in `/etc/group` lists its members. Two users were found: the original `mail` user (unusual for a mail account — suggesting prior misconfiguration) and the attacker-created `php` account.
-![image](https://hackmd.io/_uploads/S1q44JN9We.png)
+<img width="300" height="22" alt="image" src="https://github.com/user-attachments/assets/dc576346-4e6d-48b1-9cba-be58f57efbf4" />
 
 
 
@@ -319,7 +328,8 @@ The `sudo` entry in `/etc/group` lists its members. Two users were found: the or
 
 The 6th field of the `/etc/passwd` entry for `php` defines its home directory:
 
-![image](https://hackmd.io/_uploads/Hkoj4JEc-l.png)
+<img width="448" height="29" alt="image" src="https://github.com/user-attachments/assets/f779d3cf-c497-4589-8700-819e91554011" />
+
 
 
 Placing user home directories under `/usr/` is non-standard and suspicious — further confirming this is an attacker-created account.
@@ -339,10 +349,12 @@ cat /var/mail/.bash_history
 # ...
 # sudo su -
 ```
-![image](https://hackmd.io/_uploads/BkTrrkEqbx.png)
+<img width="449" height="426" alt="image" src="https://github.com/user-attachments/assets/4cf97615-2384-486f-997a-d06cfb19a146" />
+
 
 This was also corroborated in `auth.log`:
-![image](https://hackmd.io/_uploads/SJ7LB1V5-x.png)
+<img width="1322" height="49" alt="image" src="https://github.com/user-attachments/assets/9f81ce14-2daf-405b-bcb8-193b7cf4cc6a" />
+
 
 ```
 sudo: mail : TTY=pts/0 ; USER=root ; COMMAND=/bin/su -
@@ -359,7 +371,8 @@ Root's bash history (`/root/.bash_history`) clearly shows the attacker downloadi
 ```bash
 cat /root/.bash_history
 ```
-![image](https://hackmd.io/_uploads/BJy9Sy45Ze.png)
+<img width="945" height="685" alt="image" src="https://github.com/user-attachments/assets/91518acc-b581-4424-8daf-2c1f588f4a76" />
+
 
 
 > 💡 **37292** is the Exploit-DB ID for a well-known local privilege escalation exploit (CVE-2015-1328 / overlayfs).
@@ -372,7 +385,8 @@ cat /root/.bash_history
 
 Deleted files are not immediately wiped — their data blocks remain on disk until overwritten. Using **Disk-Drill** to scan unallocated space on the mounted E01 image, we recovered `37292.c` 
 
-![image](https://hackmd.io/_uploads/BykRS14qbe.png)
+<img width="1878" height="1027" alt="image" src="https://github.com/user-attachments/assets/1d9805b5-d7c6-4b39-8352-8c8e03cb8fdb" />
+
 
 
 
@@ -389,7 +403,8 @@ Two independent sources confirm the CMS:
 1. **APT history log** — `/var/log/apt/history.log` shows `drupal7` installed via package manager
 2. **Web root structure** — `/var/www/html/` contains Drupal-specific directories (`modules/`, `themes/`, `sites/`) and the `CHANGELOG.txt` file
 
-![image](https://hackmd.io/_uploads/H1uVLJE5Zg.png)
+<img width="1627" height="100" alt="image" src="https://github.com/user-attachments/assets/b4d843c2-d579-4120-a8c2-1530761f26bb" />
+
 
 Drupal is a free and open-source Content Management System (CMS) written in PHP.
 
@@ -408,8 +423,8 @@ It is used to build and manage websites, such as:
 **Answer: `7.26`**
 
 The exact version is documented in Drupal's `bootstrap.ín` and confirmed in `/var/www/html/jabc/includes/bootstrap.inc`:
+<img width="867" height="276" alt="image" src="https://github.com/user-attachments/assets/bfaad489-ea55-4621-86a1-b0700efe63d0" />
 
-![image](https://hackmd.io/_uploads/H1yuPy45bl.png)
 
 
 > ⚠️ **Drupal 7.26 is critically outdated.** This version is vulnerable to multiple public exploits including SQL injection (Drupalgeddon) and remote code execution vulnerabilities.
@@ -425,7 +440,8 @@ In `/var/log/apache2/access.log`, we located malicious HTTP `POST` requests from
 ```bash
 grep "POST" /var/log/apache2/access.log | grep "base64"
 ```
-![image](https://hackmd.io/_uploads/rJu2vkV9bl.png)
+<img width="2040" height="79" alt="image" src="https://github.com/user-attachments/assets/da855d40-0e45-47d2-bcc8-831f0c74c570" />
+
 
 Decoding the payload with CyberChef (Base64 → Raw) revealed an obfuscated PHP reverse shell script with the callback port explicitly hardcoded:
 
